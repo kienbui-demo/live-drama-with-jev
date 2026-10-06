@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Screening Room · Living Drama</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/viewer.css">
+  <script type="module" src="/viewer.js"></script>
+</head>
+<body class="viewer-body">
+  <div class="viewer-shell">
+    <header class="viewer-top">
+      <a class="viewer-brand" href="/viewer"><span class="viewer-brand-icon">▶</span> Living Drama</a>
+      <span class="viewer-top-caption">INTERACTIVE SCREENING ROOM</span>
+      <a class="viewer-producer-link" href="/producer">Production Studio ↗</a>
+    </header>
+    <div class="viewer-project-bar"><label for="viewer-project">Show</label><select id="viewer-project"></select><span class="viewer-demo-note">Pre-produced videos · simulated comments are labeled</span></div>
+    <div id="viewer-content"></div>
+  </div>
+  <div id="viewer-toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

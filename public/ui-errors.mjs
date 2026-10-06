@@ -1,0 +1,48 @@
+const messages = {
+  ALREADY_EXISTS: 'This item already exists or has an active job.',
+  ALREADY_PUBLISHED: 'This content has already been published.',
+  ANALYSIS_REQUIRED: 'Analyze the script first.',
+  APPROVAL_REQUIRED: 'Complete the required approval first.',
+  ASSET_MISSING: 'A required image or video is missing from storage.',
+  BRANCH_IN_PRODUCTION: 'This branch is already in production.',
+  CHARACTER_REFERENCE_REQUIRED: 'Approve the required character reference image first.',
+  DECISION_REQUIRED: 'Choose a story path first.',
+  EPISODE_IN_PRODUCTION: 'This episode is already in production.',
+  HARD_RULE_FAILED: 'This option violates a required story rule.',
+  INTERNAL_ERROR: 'The server encountered an error.',
+  INVALID_ASSET: 'This visual asset is invalid.',
+  INVALID_CSV: 'The CSV file is invalid. Check its columns and rows.',
+  INVALID_JSON: 'The submitted data is invalid.',
+  INVALID_MODEL_OUTPUT: 'The model returned an invalid result. Please retry.',
+  INVALID_PROVIDER_OUTPUT: 'The AI provider returned an invalid result. Please retry.',
+  INVALID_STAGE: 'This action is not available at the current production stage.',
+  INVALID_STATUS: 'This action is not available for the current status.',
+  KEYFRAME_REQUIRED: 'Generate and approve a keyframe first.',
+  KEY_REQUIRED: 'A required API key is missing from the server configuration.',
+  MIND_REQUIRED: 'Summarize the audience comments first.',
+  MIND_STALE: 'Audience insights are outdated. Summarize the comments again.',
+  NOT_FOUND: 'The requested item was not found.',
+  NOT_PUBLISHED: 'This branch has not been published.',
+  PLAN_REQUIRED: 'Create an episode plan first.',
+  PLAN_STALE: 'This plan uses an outdated story version.',
+  POINT_REQUIRED: 'Select a branch point first.',
+  PROVIDER_ERROR: 'The AI provider could not complete the request. Please retry.',
+  PROJECT_CHANGED: 'The project changed. Reload the page and try again.',
+  SHOT_ALREADY_GENERATED: 'This shot already has a generated video.',
+  STATE_VERSION_CONFLICT: 'The story version changed. Reload and try again.',
+  STORY_APPROVED: 'This story profile has already been approved.',
+  STORY_REQUIRED: 'Create a story profile first.',
+  TASK_REQUIRED: 'Start a generation task first.',
+  TOO_LARGE: 'The file or request is too large.',
+  VALIDATION_ERROR: 'Some submitted details are invalid. Review your input and try again.',
+  VIDEO_REQUIRED: 'A completed video is required before this action.',
+  VISUAL_ASSETS_REQUIRED: 'Generate and approve the required visual references first.',
+  VISUAL_LOCK_REQUIRED: 'Lock the visual references first.',
+  VISUAL_LOCKED: 'Visual references are locked and cannot be edited.',
+};
+
+export function uiErrorMessage(result, fallback = 'Unable to complete the request.') {
+  const detail = String(result?.message || '');
+  if (detail && !/[\u00C0-\u1EF9]/u.test(detail)) return detail;
+  return messages[result?.code] || (result?.code ? `${fallback} (${result.code}).` : fallback);
+}

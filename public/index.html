@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#181917">
+    <title>Living Drama — The Woman at Table 7</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand"><span class="brand-mark">L<span>.</span>D</span><span>Living Drama<small>Story control room</small></span></div>
+        <div class="show-mini"><span class="eyebrow">CURRENT STORY</span><strong>The Woman<br>at Table 7</strong><span class="show-mini-meta">01 story · 03 episodes</span></div>
+        <nav id="nav" aria-label="Main navigation">
+          <a class="nav-link" href="/producer"><span class="nav-icon">✦</span>Produce from script</a>
+          <a class="nav-link" href="/viewer"><span class="nav-icon">▶</span>Watch published branches</a>
+          <button data-view="overview"><span class="nav-icon">▦</span>Overview</button>
+          <button data-view="comments"><span class="nav-icon">☰</span>Comments <span id="comment-count" class="nav-count">36</span></button>
+          <button data-view="mind"><span class="nav-icon">◉</span>Audience insights</button>
+          <button data-view="decisions"><span class="nav-icon">⑂</span>Choose story path</button>
+          <button data-view="visuals"><span class="nav-icon">◇</span>Visuals & shots</button>
+          <button data-view="studio"><span class="nav-icon">▣</span>Produce next episode</button>
+          <button data-view="audit"><span class="nav-icon">◷</span>History</button>
+        </nav>
+        <div class="sidebar-foot"><span class="dot-live"></span>Local demo <small>Data persists after reload</small></div>
+      </aside>
+      <div class="main-column">
+        <header class="topbar"><div><span class="eyebrow">LIVING DRAMA / DEMO</span><h1 id="page-title">Story overview</h1></div><div class="topbar-right"><span id="state-pill" class="pill">Story state v1</span><div class="avatar">NS</div></div></header>
+        <main id="content" tabindex="-1"></main>
+      </div>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <input id="csv-file" type="file" accept=".csv,text/csv" hidden>
+    <input id="video-file" type="file" accept="video/mp4,video/webm" hidden>
+  </body>
+</html>

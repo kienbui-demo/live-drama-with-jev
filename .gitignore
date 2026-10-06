@@ -1,0 +1,15 @@
+data/
+node_modules/
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.log
+Thumbs.db
+.DS_Store
+
+# Local source material; review rights and sensitivity before publishing.
+references/
+Living_Drama_PRD_Vi.docx

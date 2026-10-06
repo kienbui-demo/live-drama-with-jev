@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Production Studio · Living Drama</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/producer.css">
+  <script type="module" src="/producer.js"></script>
+</head>
+<body>
+  <div class="producer-shell">
+    <header class="producer-top"><a href="/">← Back to demo</a><div><span class="eyebrow">LIVING DRAMA / PRODUCTION STUDIO</span><h1>Produce from a complete script</h1></div><a href="/viewer">Viewer experience →</a><span id="model-label" class="pill"></span></header>
+    <main class="producer-main">
+      <div class="callout">The AI agent reads the script and proposes a story profile. The producer reviews the profile and images, then locks the visual references before creating branches. Videos are prepared before viewers see them.</div>
+      <div class="project-toolbar"><div><label class="form-label" for="project-select">Current project</label><select id="project-select" class="select"></select></div><p class="tiny muted">Each project keeps its script, visual references, and story branches separate.</p></div>
+      <nav class="workflow-tabs" role="tablist" aria-label="Production steps">
+        <button type="button" role="tab" data-step="1" aria-controls="producer-step-1"><span class="workflow-number">1</span><span>Import script<small>Original script</small></span></button>
+        <button type="button" role="tab" data-step="2" aria-controls="producer-step-2"><span class="workflow-number">2</span><span>Story profile<small>Analyze and review</small></span></button>
+        <button type="button" role="tab" data-step="3" aria-controls="producer-step-3"><span class="workflow-number">3</span><span>Lock visuals<small>Characters · settings · props</small></span></button>
+        <button type="button" role="tab" data-step="4" aria-controls="branch-workshop"><span class="workflow-number">4</span><span>Branches and videos<small>Branch points · shots</small></span></button>
+      </nav>
+      <section id="producer-step-1" class="card mt step-panel" data-step-panel="1" role="tabpanel"><h2>1. Import script</h2><p class="prose">Upload a complete script to create a new project. To continue an existing project, select it above.</p><div class="script-import"><label class="form-label" for="project-title">Show title</label><input id="project-title" class="search" placeholder="For example: The Secret Behind the Contract"><label class="form-label mt" for="script-file">Complete script (.md or .txt)</label><input id="script-file" type="file" accept=".md,.txt,text/plain,text/markdown"><p class="tiny muted">If you upload only one episode, the agent will flag unknown details rather than treat it as the whole story.</p><button class="btn primary" data-action="import">Create project from script</button></div></section>
+      <div id="project-content"></div>
+    </main>
+  </div>
+  <div id="producer-toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

@@ -1,0 +1,468 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://living-drama.local/schemas/mvp-1.0.json",
+  "title": "Hợp đồng dữ liệu Living Drama MVP",
+  "description": "Dùng $ref tới $defs của từng đối tượng. Các quy tắc liên bản ghi được kiểm ở tầng nghiệp vụ.",
+  "$defs": {
+    "id": { "type": "string", "minLength": 1 },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "visibility": { "enum": ["hidden", "creator_only", "public"] },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "score": { "type": "number", "minimum": 0, "maximum": 100 },
+    "characterSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "public_facts", "private_facts", "goals", "traits", "relationship_refs", "visual_ref_ids"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "name": { "type": "string", "minLength": 1 },
+        "public_facts": { "type": "array", "items": { "type": "string" } },
+        "private_facts": { "type": "array", "items": { "type": "string" } },
+        "goals": { "type": "array", "items": { "type": "string" } },
+        "traits": { "type": "array", "items": { "type": "string" } },
+        "relationship_refs": { "type": "array", "items": { "$ref": "#/$defs/id" } },
+        "visual_ref_ids": { "type": "array", "items": { "$ref": "#/$defs/id" } }
+      }
+    },
+    "secretSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "description", "holders", "visibility", "reveal_eligibility"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "description": { "type": "string", "minLength": 1 },
+        "holders": { "type": "array", "items": { "$ref": "#/$defs/id" } },
+        "visibility": { "$ref": "#/$defs/visibility" },
+        "reveal_eligibility": { "type": "string", "minLength": 1 },
+        "payoff_window": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "earliest_episode": { "type": "integer", "minimum": 1 },
+            "latest_episode": { "type": "integer", "minimum": 1 }
+          }
+        }
+      }
+    },
+    "storyBible": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "show_id", "title", "premise", "characters", "secrets", "hard_rules", "arc", "creator_policy"],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "show_id": { "$ref": "#/$defs/id" },
+        "title": { "type": "string", "minLength": 1 },
+        "premise": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "characters": { "type": "array", "minItems": 2, "items": { "$ref": "#/$defs/characterSpec" } },
+        "secrets": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/secretSpec" } },
+        "hard_rules": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "arc": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["current_stage", "intended_payoffs"],
+          "properties": {
+            "current_stage": { "type": "string", "minLength": 1 },
+            "intended_payoffs": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["thread_id", "description"],
+                "properties": {
+                  "thread_id": { "$ref": "#/$defs/id" },
+                  "target_episode": { "type": "integer", "minimum": 1 },
+                  "description": { "type": "string", "minLength": 1 }
+                }
+              }
+            },
+            "planned_ending": { "type": "string" }
+          }
+        },
+        "creator_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tone", "prohibited_content", "requires_manual_approval", "target_duration_seconds"],
+          "properties": {
+            "tone": { "type": "string", "minLength": 1 },
+            "prohibited_content": { "type": "array", "items": { "type": "string" } },
+            "requires_manual_approval": { "const": true },
+            "target_duration_seconds": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["min", "max"],
+              "properties": { "min": { "const": 30 }, "max": { "const": 45 } }
+            }
+          }
+        },
+        "visual_bible_ref": { "type": "string" }
+      }
+    },
+    "visualBible": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "visual_bible_id", "show_id", "version", "frame_ratio", "color_palette", "lighting_rules", "camera_rules", "characters", "locations", "props"],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "visual_bible_id": { "$ref": "#/$defs/id" },
+        "show_id": { "$ref": "#/$defs/id" },
+        "version": { "type": "integer", "minimum": 1 },
+        "frame_ratio": { "type": "string", "minLength": 1 },
+        "color_palette": { "type": "array", "items": { "type": "string" } },
+        "lighting_rules": { "type": "array", "items": { "type": "string" } },
+        "camera_rules": { "type": "array", "items": { "type": "string" } },
+        "characters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["character_id", "appearance", "approved_reference_asset_ids", "costume_refs"],
+            "properties": {
+              "character_id": { "$ref": "#/$defs/id" },
+              "appearance": { "type": "string", "minLength": 1 },
+              "voice_note": { "type": "string" },
+              "approved_reference_asset_ids": { "type": "array", "items": { "$ref": "#/$defs/id" } },
+              "costume_refs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["id", "description", "asset_ids"],
+                  "properties": {
+                    "id": { "$ref": "#/$defs/id" },
+                    "description": { "type": "string", "minLength": 1 },
+                    "asset_ids": { "type": "array", "items": { "$ref": "#/$defs/id" } }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "locations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "description", "time_of_day", "approved_reference_asset_ids"],
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "description": { "type": "string", "minLength": 1 },
+              "time_of_day": { "type": "string" },
+              "approved_reference_asset_ids": { "type": "array", "items": { "$ref": "#/$defs/id" } }
+            }
+          }
+        },
+        "props": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "description", "approved_reference_asset_ids"],
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "description": { "type": "string", "minLength": 1 },
+              "approved_reference_asset_ids": { "type": "array", "items": { "$ref": "#/$defs/id" } }
+            }
+          }
+        }
+      }
+    },
+    "stateOperation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "path", "reason"],
+      "properties": {
+        "op": { "enum": ["set", "append", "resolve", "reveal"] },
+        "path": { "type": "string", "minLength": 1 },
+        "value": {},
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "worldState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "show_id", "version", "parent_version", "created_at", "current_episode", "arc_stage", "characters", "facts", "secrets", "open_threads", "continuity"],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "show_id": { "$ref": "#/$defs/id" },
+        "version": { "type": "integer", "minimum": 0 },
+        "parent_version": { "type": ["integer", "null"], "minimum": 0 },
+        "source_decision_id": { "$ref": "#/$defs/id" },
+        "created_at": { "$ref": "#/$defs/timestamp" },
+        "current_episode": { "type": "integer", "minimum": 0 },
+        "arc_stage": { "type": "string", "minLength": 1 },
+        "characters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "known_fact_ids", "emotional_state", "relationship_states"],
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "known_fact_ids": { "type": "array", "items": { "$ref": "#/$defs/id" } },
+              "emotional_state": { "type": "string" },
+              "relationship_states": { "type": "object", "additionalProperties": { "type": "string" } },
+              "current_costume_ref": { "$ref": "#/$defs/id" }
+            }
+          }
+        },
+        "facts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "text", "visibility"],
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "text": { "type": "string", "minLength": 1 },
+              "visibility": { "$ref": "#/$defs/visibility" },
+              "source_episode_id": { "$ref": "#/$defs/id" }
+            }
+          }
+        },
+        "secrets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "visibility"],
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "visibility": { "$ref": "#/$defs/visibility" },
+              "revealed_in_episode_id": { "$ref": "#/$defs/id" }
+            }
+          }
+        },
+        "open_threads": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "question"],
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "question": { "type": "string", "minLength": 1 },
+              "owner_character_id": { "$ref": "#/$defs/id" },
+              "planned_payoff_episode": { "type": "integer", "minimum": 1 }
+            }
+          }
+        },
+        "continuity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["location_ref_ids", "prop_states"],
+          "properties": {
+            "location_ref_ids": { "type": "array", "items": { "$ref": "#/$defs/id" } },
+            "prop_states": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["prop_id", "condition"],
+                "properties": {
+                  "prop_id": { "$ref": "#/$defs/id" },
+                  "holder_character_id": { "$ref": "#/$defs/id" },
+                  "location_ref_id": { "$ref": "#/$defs/id" },
+                  "condition": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "audienceEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "event_id", "episode_id", "source", "author_ref", "body_redacted", "language", "created_at", "flags"],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "event_id": { "$ref": "#/$defs/id" },
+        "episode_id": { "$ref": "#/$defs/id" },
+        "source": { "enum": ["seeded", "imported_csv"] },
+        "author_ref": { "$ref": "#/$defs/id" },
+        "body_redacted": { "type": "string" },
+        "language": { "type": "string", "minLength": 2 },
+        "created_at": { "$ref": "#/$defs/timestamp" },
+        "flags": { "type": "array", "uniqueItems": true, "items": { "enum": ["spam", "duplicate", "toxic", "low_quality"] } }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event_id", "sample_redacted"],
+      "properties": {
+        "event_id": { "$ref": "#/$defs/id" },
+        "sample_redacted": { "type": "string" }
+      }
+    },
+    "audienceMind": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "mind_id", "episode_id", "source_mode", "window", "clusters", "quality", "model_version", "created_at"],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "mind_id": { "$ref": "#/$defs/id" },
+        "episode_id": { "$ref": "#/$defs/id" },
+        "source_mode": { "enum": ["jev_live", "jev_mock"] },
+        "window": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["start_at", "end_at", "event_count", "unique_authors"],
+          "properties": {
+            "start_at": { "$ref": "#/$defs/timestamp" },
+            "end_at": { "$ref": "#/$defs/timestamp" },
+            "event_count": { "type": "integer", "minimum": 0 },
+            "unique_authors": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "clusters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["intent", "count", "share", "confidence", "evidence", "impact_tags"],
+            "properties": {
+              "intent": { "enum": ["confront_now", "eavesdrop", "gather_evidence", "protect_linh", "keep_mystery", "reveal_now", "other"] },
+              "count": { "type": "integer", "minimum": 0 },
+              "share": { "$ref": "#/$defs/confidence" },
+              "confidence": { "$ref": "#/$defs/confidence" },
+              "evidence": { "type": "array", "items": { "$ref": "#/$defs/evidence" } },
+              "impact_tags": { "type": "array", "uniqueItems": true, "items": { "enum": ["pacing", "character_action", "secret_timing", "tone"] } }
+            }
+          }
+        },
+        "quality": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["spam_rate", "duplicate_rate", "warnings"],
+          "properties": {
+            "spam_rate": { "$ref": "#/$defs/confidence" },
+            "duplicate_rate": { "$ref": "#/$defs/confidence" },
+            "warnings": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "model_version": { "type": "string", "minLength": 1 },
+        "created_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "decisionOption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["option_id", "action_summary", "expected_effect", "risks", "score_breakdown", "constraints", "projected_state_diff", "evidence_refs"],
+      "properties": {
+        "option_id": { "$ref": "#/$defs/id" },
+        "action_summary": { "type": "string", "minLength": 1 },
+        "expected_effect": { "type": "string", "minLength": 1 },
+        "risks": { "type": "array", "items": { "type": "string" } },
+        "score_breakdown": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["audience", "coherence", "tension", "policy", "feasibility"],
+          "properties": {
+            "audience": { "$ref": "#/$defs/score" },
+            "coherence": { "$ref": "#/$defs/score" },
+            "tension": { "$ref": "#/$defs/score" },
+            "policy": { "$ref": "#/$defs/score" },
+            "feasibility": { "$ref": "#/$defs/score" }
+          }
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "result", "explanation"],
+            "properties": {
+              "code": { "type": "string", "minLength": 1 },
+              "result": { "enum": ["pass", "warn", "fail"] },
+              "explanation": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "projected_state_diff": { "type": "array", "items": { "$ref": "#/$defs/stateOperation" } },
+        "evidence_refs": { "type": "array", "items": { "$ref": "#/$defs/id" } }
+      }
+    },
+    "storyDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "decision_id", "show_id", "mind_id", "base_state_version", "status", "options"],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "decision_id": { "$ref": "#/$defs/id" },
+        "show_id": { "$ref": "#/$defs/id" },
+        "mind_id": { "$ref": "#/$defs/id" },
+        "base_state_version": { "type": "integer", "minimum": 0 },
+        "status": { "enum": ["proposed", "simulated", "approved", "rejected", "committed"] },
+        "options": { "type": "array", "minItems": 2, "maxItems": 3, "items": { "$ref": "#/$defs/decisionOption" } },
+        "selected_option_id": { "$ref": "#/$defs/id" },
+        "rationale": { "type": "string" },
+        "approver_id": { "$ref": "#/$defs/id" },
+        "committed_state_version": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "shot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shot_id", "duration_seconds", "action", "character_ids", "location_ref_id", "prop_ids", "costume_ref_ids", "reference_asset_ids", "visual_instruction"],
+      "properties": {
+        "shot_id": { "$ref": "#/$defs/id" },
+        "duration_seconds": { "type": "number", "exclusiveMinimum": 0 },
+        "action": { "type": "string", "minLength": 1 },
+        "dialogue": { "type": "string" },
+        "character_ids": { "type": "array", "items": { "$ref": "#/$defs/id" } },
+        "location_ref_id": { "$ref": "#/$defs/id" },
+        "prop_ids": { "type": "array", "items": { "$ref": "#/$defs/id" } },
+        "costume_ref_ids": { "type": "array", "items": { "$ref": "#/$defs/id" } },
+        "reference_asset_ids": { "type": "array", "items": { "$ref": "#/$defs/id" } },
+        "visual_instruction": { "type": "string", "minLength": 1 }
+      }
+    },
+    "episodePlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "plan_id", "episode_id", "show_id", "canonical_state_version", "narrative_goal", "cliffhanger", "beat_sheet", "screenplay", "shot_plan", "prompt_bundle_version", "script_approval", "video_approval", "publish_approval"],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "plan_id": { "$ref": "#/$defs/id" },
+        "episode_id": { "$ref": "#/$defs/id" },
+        "show_id": { "$ref": "#/$defs/id" },
+        "canonical_state_version": { "type": "integer", "minimum": 0 },
+        "decision_id": { "$ref": "#/$defs/id" },
+        "narrative_goal": { "type": "string", "minLength": 1 },
+        "cliffhanger": { "type": "string", "minLength": 1 },
+        "beat_sheet": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "screenplay": { "type": "string", "minLength": 1 },
+        "shot_plan": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/shot" } },
+        "prompt_bundle_version": { "type": "string", "minLength": 1 },
+        "script_approval": { "enum": ["pending", "approved", "rejected"] },
+        "video_approval": { "enum": ["pending", "approved", "rejected"] },
+        "publish_approval": { "enum": ["pending", "approved", "rejected"] }
+      }
+    },
+    "videoGenerationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "request_id", "plan_id", "visual_bible_version", "prompt_bundle_version", "shots", "reference_asset_ids", "output", "idempotency_key"],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "request_id": { "$ref": "#/$defs/id" },
+        "plan_id": { "$ref": "#/$defs/id" },
+        "visual_bible_version": { "type": "integer", "minimum": 1 },
+        "prompt_bundle_version": { "type": "string", "minLength": 1 },
+        "shots": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/shot" } },
+        "reference_asset_ids": { "type": "array", "items": { "$ref": "#/$defs/id" } },
+        "output": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["aspect_ratio", "target_duration_seconds"],
+          "properties": {
+            "aspect_ratio": { "type": "string", "minLength": 1 },
+            "target_duration_seconds": { "type": "number", "minimum": 30, "maximum": 45 }
+          }
+        },
+        "idempotency_key": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
